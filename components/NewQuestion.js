@@ -10,38 +10,31 @@ class NewQuestion extends Component{
         answer: '',
         }
     submit = () => {
-
-
-        const { question, answer } = this.state
-        //call title and question that are store in this.props.navigation.state.params   
-        const {title, questions} = this.props.navigation.state.params        
+        //Here I'm storing the values that comes from OneDeck component
+        const { title, questions } = this.props.navigation.state.params
+        const { answer, question } = this.state
         if (question === '') {
-            Alert.alert('Mandatory', 'Question cannot be empty');
-            return;
+            Alert.alert('You have to add question')
+            return
         }
         if (answer === '') {
-            Alert.alert('Mandatory', 'Answer cannot be empty');
-            return;
-        }   
-        const params = {title, questions, question, answer}     
+            Alert.alert('You have to add a answer')
+            return
+        }
+        const params = {title, questions, question, answer}
+        //Here I'm sending the information to the reducer to add a new question
         this.props.dispatch(newQaction(params))
-        
-        NewQapi({ 
-            card: {question, answer},
-            deckName: title     
-        })
-        //this.setState(() => ({ question: '', answer: '' }))    
-   
+        //here I'm sending the information to the API to add a new question
+        NewQapi({ deckName: title, card: {question, answer} })
+        //After add the question this return you to the DeckList component      
+        this.props.navigation.navigate('Home') 
+       
       }
  render(){
     const {question, answer} = this.state
-    const {title, questions} = this.props.navigation.state.params
     return(
         <View style={styles.container}>
             <View>
-                <Text>{questions}</Text>
-                <Text>{JSON.stringify(this.props.navigation.state.params)}</Text>
-                <Text>{JSON.stringify(this.state.answer)}</Text>
                 <TextInput
                 style={styles.textInput}
                 value={question}
@@ -73,12 +66,12 @@ const styles = StyleSheet.create({
       flexDirection: 'column',   
     },
     textInput:{
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      margin: 24,
-      borderRadius: 7,
-      height: 45,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        margin: 24,
+        borderRadius: 7,
+        height: 45,
     },
     button:{
       backgroundColor: 'green',

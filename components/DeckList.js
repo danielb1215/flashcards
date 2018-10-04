@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { receiveEntries } from '../actions/index'
 import { fetchDeckResults } from '../utils/api'
 import Card from './Card'
 
 
-class Decks  extends Component {
+class DeckList  extends Component {
   componentDidMount() {
     //Here I made a search to bring all the information ofthe database
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     fetchDeckResults().then(decks => dispatch(receiveEntries(decks)))
-        .then(() => this.setState(() => ({ready: true})));
   }
   //https://facebook.github.io/react-native/docs/flatlist
   renderItem = ({item}) => (
@@ -33,7 +32,7 @@ class Decks  extends Component {
           <FlatList
             data={Object.values(this.props.decks)}
             renderItem={this.renderItem}
-            keyExtractor={(item, index) => index}
+            keyExtractor = { (item, index) => index.toString() }
             />
         </View>
       )
@@ -74,4 +73,4 @@ function mapStateToProps(state) {
   };
 }
   
-export default connect(mapStateToProps)(Decks);
+export default connect(mapStateToProps)(DeckList);

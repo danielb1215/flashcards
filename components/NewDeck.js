@@ -12,9 +12,9 @@ class NewDeck extends Component{
       const entry = this.state
       //send the info to the reducer 
       this.props.dispatch(addNewDeck({
-        [entry.title]: {title: entry.title, question:[]}
+        [entry.title]: {title: entry.title, questions: []}
       }))        
-      const info = {[entry.title]: {title: entry.title, question: []}}
+      const info = {[entry.title]: {title: entry.title, questions: []}}
       //send the info to the api to store it in the api 
       submitNewDeck( info )      
       //Reset the state
@@ -25,9 +25,8 @@ class NewDeck extends Component{
   render(){  
     return (
       <View style={styles.container}>
-        <View>  
-          <Text>{JSON.stringify(this.state, this.props.decks)}</Text>     
-          <Text style={styles.title} >What is the name of your new deck?</Text>   
+        <View>   
+          <Text style={styles.title} >Insert the title of the new deck!</Text>   
         <TextInput
           style={styles.textInput}
           placeholder="Type here the title of your new Deck!"

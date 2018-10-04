@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Platform, StatusBar } from 'react-native';
 import { createMaterialTopTabNavigator , StackNavigator  } from 'react-navigation'
-import Decks from './components/Decks'
+import DeckList from './components/DeckList'
 import NewDeck from './components/NewDeck'
 import OneDeck from './components/OneDeck'
 import NewQuestion from './components/NewQuestion'
@@ -10,9 +10,10 @@ import { red, orange, blue, lightPurp, pink, white, purple } from './utils/color
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './reducers'
+import { setLocalNotification } from './utils/api'
 const Tabs = createMaterialTopTabNavigator ({
   Decks: {
-    screen: Decks,
+    screen: DeckList,
     navigationOptions: {
       tabBarLabel: 'Decks',      
     },
@@ -40,6 +41,9 @@ const MainNavigator = StackNavigator ({
 })
 
 export default class App extends React.Component {
+  componentDidMount() {
+    setLocalNotification()
+  }
   render() {
     return (
       <Provider store={createStore(reducer)}>

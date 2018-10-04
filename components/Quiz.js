@@ -1,111 +1,121 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native'; 
-import SwipeCards from 'react-native-swipe-cards';
-import { connect } from 'react-redux';
-import { receiveEntries } from '../actions/index'
-import { fetchDeckResults } from '../utils/api'
- 
-//https://www.npmjs.com/package/react-native-swipe-cards
-class Card extends Component {
-  constructor(props) {
-    super(props);
-  }
- 
-  render() {
-    return (
-      <View style={[styles.card, {backgroundColor: this.props.backgroundColor}]}>
-        <Text>{this.props.decks.title}</Text>
-      </View>
-    )
-  }
-}
- 
-class NoMoreCards extends Component {
-    componentDidMount() {
-        const {dispatch} = this.props;
-        fetchDeckResults().then(decks => dispatch(receiveEntries(decks)))
-            .then(() => this.setState(() => ({ready: true})));
-    }
-  constructor(props) {
-    super(props); 
-  }
- 
-  render() {
-    return (
-      <View>
-        <Text style={styles.noMoreCardsText}>No more cards</Text>
-      </View>
-    )
-  }
-}
- 
+import {StyleSheet, Text, View, TouchableOpacity, Alert, ProgressBarAndroid } from 'react-native'; 
+import { connect } from 'react-redux'; 
+import { clearLocalNotification, setLocalNotification } from '../utils/api'
+
 class Quiz extends Component {
-  constructor(props) {
-    super(props);
-    /*
-    this.state = {
-      cards: [
-        {text: 'Tomato', backgroundColor: 'red'},
-        {text: 'Aubergine', backgroundColor: 'purple'},
-        {text: 'Courgette', backgroundColor: 'green'},
-        {text: 'Blueberry', backgroundColor: 'blue'},
-        {text: 'Umm...', backgroundColor: 'cyan'},
-        {text: 'orange', backgroundColor: 'orange'},
-      ]
-    }; */
-    this.state = {
-        questionIndex: 0,
-        correctAnswers: 0,
-        shouldShowAnswer: false,
-    };
-  }
- 
-  handleYup (card) {
-    console.log(`Yup for ${card.text}`)
-    const {questionIndex, correctAnswers} = this.state;
-    this.setState({questionIndex: questionIndex + 1, correctAnswers: correctAnswers + 1, shouldShowAnswer: false});
-  }
-  handleNope (card) {
-    this.setState({questionIndex: this.state.questionIndex + 1});
-    console.log(`Nope for ${card.text}`)
-  }
-  handleMaybe (card) {
-    console.log(`Maybe for ${card.text}`)
-    this.setState({shouldShowAnswer: !this.state.shouldShowAnswer});
-  }
-  render() {
-    // If you want a stack of cards instead of one-per-one view, activate stack mode
-    // stack={true}
-    return (
-         <View>
-      <SwipeCards
-        cards={Object.values(this.props.decks)}
-        renderCard={(cardData) => <Card {...cardData} />}
-        renderNoMoreCards={() => <NoMoreCards />}
- 
-        handleYup={this.handleYup}
-        handleNope={this.handleNope}
-        handleMaybe={this.handleMaybe}
-        hasMaybeAction
-      />
-     
-          <Text>{this.state.correctAnswers}</Text>
-      </View>
-    )
+    state = {
+        i: 0,
+        correct: 0,       
+    }  
+    toDeck = () => {
+      this.props.navigation.goBack()
+    }
+    displayAnswer = (x) => {
+      Alert.alert(x)
+    }
+    correct = () => {
+      const {i, correct} = this.state;
+      this.setState({i: i + 1, correct: correct + 1})
+      clearLocalNotification()
+      .then(setLocalNotification)
+    }
+    reset = () => {
+        this.setState({i: 0, correct: 0})
+    }
+    incorrect = (x) => {
+        this.setState({i: this.state.i + 1})
+        Alert.alert(x);
+    }
+    render(){
+      const { correct, i } = this.state
+      const { questions } = this.props.navigation.state.params
+      const questionExist = i < questions.length;
+      const questionLeft = questions.length - i;
+      return(
+        <View style={{flex: 1 }}>
+          {
+            //Here if there are questions I made a loop to display the questions
+          }
+          {questionExist ? (
+            <View style={styles.container} >
+                <View style={{flex: 1}}>
+                    <View>
+                        <Text>{questionLeft} / {questions.length}</Text>
+                    </View>
+                </View>
+              <View style={{flex: 3}} >
+                  <View style={styles.center}>
+                      <Text style={{fontSize: 36}}>{questions[i].question}</Text>
+                      <TouchableOpacity onPress={() => this.displayAnswer(questions[i].answer)}>
+                        <Text style={{fontSize: 20, color:'yellow'}}>Answer</Text>
+                      </TouchableOpacity>
+                </View>   
+               </View>
+
+                <View style={[styles.buttonsContainer, {flex: 2}]}>
+                    <View style={styles.container}>
+                      <View style={styles.center}>
+                        <TouchableOpacity onPress={this.correct}>
+                          <Text style={[styles.buttons, {backgroundColor: 'green'}]}>Correct</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.incorrect(questions[i].answer)}>
+                          <Text style={[styles.buttons, { backgroundColor: 'red'}]}>Incorrect</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View> 
+                </View>
+             </View>   
+
+          )
+          : (
+             <View style={styles.container}>
+                        <Text>Score: {correct}</Text>
+
+                        <View style={[styles.buttonsContainer, {flex: 2}]}>
+                            <View style={styles.container}>
+                                <TouchableOpacity onPress={this.reset}>
+                                    <Text style={[styles.buttons, { backgroundColor: 'green'}]}>Start Quiz</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={this.toDeck}>
+                                    <Text style={[styles.buttons, { backgroundColor: 'blue'}]}>Back to Deck</Text>
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+                    </View>
+          )}
+        </View>
+      
+      
+      )
   }
 }
  
 const styles = StyleSheet.create({
-  card: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 300,
-    height: 300,
+  container: {
+    flex: 1,
+    backgroundColor: "#F5FCFF"
   },
-  noMoreCardsText: {
-    fontSize: 22,
+  text: {
+    textAlign: "center",
+    fontSize: 50,
+    backgroundColor: "transparent"
+  },
+  buttons:{
+    justifyContent: 'center',
+    height: 30,
+    textAlign: 'center',
+    width: 200
+  },
+  center:{
+    alignItems: 'center'
+  },
+  buttonsContainer:{
+    alignItems: 'center', justifyContent: 'space-around'
   }
-})
+});
 function mapStateToProps(state) {
     return {
         decks: state,
