@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { NewQapi } from '../utils/api'
 import { newQaction } from '../actions/index'
-
+// I follow some code from the udafitnessapp https://github.com/udacity/reactnd-UdaciFitness-complete/commit/a3e78fe08ac785e6ce372ed37bfb5bcfa19851e3
 class NewQuestion extends Component{
     state = {
         question: '',
