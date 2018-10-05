@@ -19,7 +19,8 @@ class NewDeck extends Component{
       submitNewDeck( info )      
       //Reset the state
       this.setState(() => ({ title: '' }))
-       this.props.navigation.goBack()       
+      this.props.navigation.goBack()
+      this.props.navigation.navigate('OneDeck', {title: entry.title, questions: []})      
     }
 
   render(){  

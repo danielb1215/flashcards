@@ -12,6 +12,7 @@ class OneDeck extends Component {
             <View style={styles.container}>
                 <View style={styles.tittle} > 
                     <Text style={{fontSize: 26}} >{title}</Text>
+                    <Text style={{fontSize: 26}} >{console.log(this.props)}</Text>
                     <Text style={{fontSize: 20}}>{questions && questions.length} Cards </Text>
                 </View>
                 <TouchableOpacity
